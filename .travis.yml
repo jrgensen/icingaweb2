@@ -33,6 +33,7 @@ notifications:
 # also see: test/setup_vendor.sh
 before_script:
   - sudo locale-gen en_US.UTF-8 de_DE.UTF-8 fr_FR.UTF-8
+  - phpenv config-add test/travis-ldap.ini
   - test/travis_database.sh
   - test/setup_vendor.sh
 
