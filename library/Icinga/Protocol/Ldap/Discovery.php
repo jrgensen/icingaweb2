@@ -80,6 +80,16 @@ class Discovery
     }
 
     /**
+     * Why the discovery failed
+     *
+     * @return \Exception|null
+     */
+    public function getError()
+    {
+        return $this->connection->getDiscoveryError();
+    }
+
+    /**
      * Discover LDAP servers on the given domain
      *
      * @param  string   $domain The object containing the form elements
