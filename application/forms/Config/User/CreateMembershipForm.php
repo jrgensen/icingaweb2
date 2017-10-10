@@ -56,6 +56,11 @@ class CreateMembershipForm extends Form
         return $this;
     }
 
+    public function init()
+    {
+        $this->setSubmitLabel($this->translate('Create'));
+    }
+
     /**
      * Create and add elements to this form
      *
@@ -86,7 +91,6 @@ class CreateMembershipForm extends Form
         );
 
         $this->setTitle(sprintf($this->translate('Create memberships for %s'), $this->userName));
-        $this->setSubmitLabel($this->translate('Create'));
     }
 
     /**

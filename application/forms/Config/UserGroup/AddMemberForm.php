@@ -76,6 +76,11 @@ class AddMemberForm extends Form
         return $this;
     }
 
+    public function init()
+    {
+        $this->setSubmitLabel($this->translate('Add'));
+    }
+
     /**
      * Create and add elements to this form
      *
@@ -123,7 +128,6 @@ class AddMemberForm extends Form
         );
 
         $this->setTitle(sprintf($this->translate('Add members for group %s'), $this->groupName));
-        $this->setSubmitLabel($this->translate('Add'));
     }
 
     /**
