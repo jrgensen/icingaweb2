@@ -1145,11 +1145,6 @@ class Form extends Zend_Form
                 $this->getView()->layout()->setLayout('wrapped');
             }
 
-            // To prevent a BC, this is here. The proper fix is to extend populate()
-            // and pass $ignoreDisabled through to preserveDefaults()
-            $this->create($formData)->preserveDefaults($this, $formData, false);
-
-            $this->populate($formData); // Necessary to get isSubmitted() to work
             if (! $this->getSubmitLabel() || $this->isSubmitted()) {
                 if ($this->isValid($formData)
                     && (($this->onSuccess !== null && false !== call_user_func($this->onSuccess, $this))
@@ -1180,6 +1175,12 @@ class Form extends Zend_Form
             } elseif ($this->getValidatePartial()) {
                 // The form can't be processed but we may want to show validation errors though
                 $this->isValidPartial($formData);
+            } else {
+                // To prevent a BC, this is here. The proper fix is to extend populate()
+                // and pass $ignoreDisabled through to preserveDefaults()
+                $this->create($formData)->preserveDefaults($this, $formData, false);
+
+                $this->populate($formData);
             }
         } else {
             $this->onRequest();
@@ -1200,11 +1201,21 @@ class Form extends Zend_Form
         if (strtolower($this->getRequest()->getMethod()) !== $this->getMethod()) {
             return false;
         }
+
         if ($this->getIsApiTarget()) {
             return true;
         }
+
         if ($this->getSubmitLabel()) {
-            return $this->getElement('btn_submit')->isChecked();
+            $button = $this->getElement('btn_submit');
+            if ($button !== null && $button->isChecked()) {
+                return true;
+            }
+
+            $requestData = $this->getRequestData();
+            if (isset($requestData['btn_submit']) && $requestData['btn_submit'] === $this->getSubmitLabel()) {
+                return true;
+            }
         }
 
         return false;
