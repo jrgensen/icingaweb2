@@ -317,7 +317,15 @@ class ResourceConfigForm extends ConfigForm
      */
     public function isValidPartial(array $formData)
     {
-        if ($this->getElement('resource_validation')->isChecked() && parent::isValid($formData)) {
+        $this->create($formData);
+
+        if (isset($formData['resource_validation'])
+            && $this->getElement('resource_validation')->setValue($formData['resource_validation'])->isChecked()
+        ) {
+            if (! parent::isValid($formData)) {
+                return false;
+            }
+
             $inspection = static::inspectResource($this);
             if ($inspection !== null) {
                 $join = function ($e) use (& $join) {
@@ -347,6 +355,12 @@ class ResourceConfigForm extends ConfigForm
             }
 
             $this->info($this->translate('The configuration has been successfully validated.'));
+        } else {
+            // To prevent a BC, this is here. The proper fix is to extend populate()
+            // and pass $ignoreDisabled through to preserveDefaults()
+            $this->preserveDefaults($this, $formData, false);
+
+            $this->populate($formData);
         }
 
         return true;

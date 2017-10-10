@@ -180,6 +180,8 @@ class AuthBackendPage extends Form
      */
     public function isValidPartial(array $formData)
     {
+        $this->create($formData);
+
         if (isset($formData['backend_validation']) && parent::isValid($formData)) {
             $self = clone $this;
             if (($resourceElement = $self->getSubForm('backend_form')->getElement('resource')) !== null) {
@@ -218,6 +220,10 @@ class AuthBackendPage extends Form
         } elseif (isset($formData['discovery_btn']) || isset($formData['btn_discover_domain'])) {
             return parent::isValidPartial($formData);
         } elseif (! isset($formData['backend_validation'])) {
+            // To prevent a BC, this is here. The proper fix is to extend populate()
+            // and pass $ignoreDisabled through to preserveDefaults()
+            $this->preserveDefaults($this, $formData, false);
+
             // This is usually done by isValid(Partial), but as we're not calling any of these...
             $this->populate($formData);
         }

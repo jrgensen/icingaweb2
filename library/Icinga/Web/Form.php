@@ -1238,21 +1238,7 @@ class Form extends Zend_Form
     public function isValidPartial(array $formData)
     {
         $this->create($formData);
-
-        foreach ($this->getElements() as $name => $element) {
-            if (array_key_exists($name, $formData)) {
-                if ($element->getAttrib('disabled')) {
-                    // Ensure that disabled elements are not overwritten
-                    // (http://www.zendframework.com/issues/browse/ZF-6909)
-                    $formData[$name] = $element->getValue();
-                } elseif (array_key_exists($name . static::DEFAULT_SUFFIX, $formData)
-                    && $formData[$name] === $formData[$name . static::DEFAULT_SUFFIX]
-                ) {
-                    unset($formData[$name]);
-                }
-            }
-        }
-
+        $this->preserveDefaults($this, $formData, false);
         return parent::isValidPartial($formData);
     }
 

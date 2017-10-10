@@ -88,6 +88,8 @@ class DbResourcePage extends Form
      */
     public function isValidPartial(array $formData)
     {
+        $this->create($formData);
+
         if (isset($formData['backend_validation']) && parent::isValid($formData)) {
             if (! $this->validateConfiguration()) {
                 return false;
@@ -95,6 +97,10 @@ class DbResourcePage extends Form
 
             $this->info($this->translate('The configuration has been successfully validated.'));
         } elseif (! isset($formData['backend_validation'])) {
+            // To prevent a BC, this is here. The proper fix is to extend populate()
+            // and pass $ignoreDisabled through to preserveDefaults()
+            $this->preserveDefaults($this, $formData, false);
+
             // This is usually done by isValid(Partial), but as we're not calling any of these...
             $this->populate($formData);
         }

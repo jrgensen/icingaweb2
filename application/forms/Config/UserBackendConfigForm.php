@@ -390,11 +390,15 @@ class UserBackendConfigForm extends ConfigForm
      */
     public function isValidPartial(array $formData)
     {
-        if (! parent::isValidPartial($formData)) {
-            return false;
-        }
+        $this->create($formData);
 
-        if ($this->getElement('backend_validation')->isChecked() && parent::isValid($formData)) {
+        if (isset($formData['backend_validation'])
+            && $this->getElement('backend_validation')->setValue($formData['backend_validation'])->isChecked()
+        ) {
+            if (! parent::isValid($formData)) {
+                return false;
+            }
+
             $inspection = static::inspectUserBackend($this);
             if ($inspection !== null) {
                 $join = function ($e) use (& $join) {
@@ -424,6 +428,12 @@ class UserBackendConfigForm extends ConfigForm
             }
 
             $this->info($this->translate('The configuration has been successfully validated.'));
+        } else {
+            // To prevent a BC, this is here. The proper fix is to extend populate()
+            // and pass $ignoreDisabled through to preserveDefaults()
+            $this->preserveDefaults($this, $formData, false);
+
+            $this->populate($formData);
         }
 
         return true;
