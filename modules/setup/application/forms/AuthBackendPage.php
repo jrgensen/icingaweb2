@@ -217,8 +217,6 @@ class AuthBackendPage extends Form
             }
 
             $this->info($this->translate('The configuration has been successfully validated.'));
-        } elseif (isset($formData['discovery_btn']) || isset($formData['btn_discover_domain'])) {
-            return parent::isValidPartial($formData);
         } elseif (! isset($formData['backend_validation'])) {
             // To prevent a BC, this is here. The proper fix is to extend populate()
             // and pass $ignoreDisabled through to preserveDefaults()
@@ -226,6 +224,10 @@ class AuthBackendPage extends Form
 
             // This is usually done by isValid(Partial), but as we're not calling any of these...
             $this->populate($formData);
+
+            if (isset($formData['type']) && ($formData['type'] === 'ldap' || $formData['type'] === 'msldap')) {
+                $this->getSubForm('backend_form')->handleDiscovery($formData);
+            }
         }
 
         return true;

@@ -436,6 +436,11 @@ class UserBackendConfigForm extends ConfigForm
             $this->populate($formData);
         }
 
+        if (isset($formData['type']) && ($formData['type'] === 'ldap' || $formData['type'] === 'msldap')) {
+            // TODO: You've got a better solution? Then don't hesitate and replace it..
+            $this->getSubForm('backend_form')->handleDiscovery($formData);
+        }
+
         return true;
     }
 

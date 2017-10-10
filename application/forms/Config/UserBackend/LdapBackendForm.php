@@ -256,7 +256,8 @@ class LdapBackendForm extends Form
         );
     }
 
-    public function isValidPartial(array $formData)
+    // TODO: You've got a better solution? Then don't hesitate and replace it..
+    public function handleDiscovery(array $formData)
     {
         $isAd = isset($formData['type']) && $formData['type'] === 'msldap';
         $baseDn = null;
@@ -292,28 +293,26 @@ class LdapBackendForm extends Form
                 $userNameAttribute = 'uid';
             }
 
-            $formData['user_class'] = $userClass;
+            $this->getElement('user_class')->setValue($userClass);
 
             if (! isset($formData['filter']) || $formData['filter'] === '') {
-                $formData['filter'] = $filter;
+                $this->getElement('filter')->setValue($filter);
             }
 
-            $formData['user_name_attribute'] = $userNameAttribute;
+            $this->getElement('user_name_attribute')->setValue($userNameAttribute);
 
             if ($baseDn !== null && (! isset($formData['base_dn']) || $formData['base_dn'] === '')) {
-                $formData['base_dn'] = $baseDn;
+                $this->getElement('base_dn')->setValue($baseDn);
             }
         }
 
         if (isset($formData['btn_discover_domain']) && $formData['btn_discover_domain'] === 'discovery_btn') {
             try {
-                $formData['domain'] = $this->discoverDomain($formData);
+                $this->getElement('domain')->setValue($this->discoverDomain($formData));
             } catch (LdapException $e) {
                 $this->error($e->getMessage());
             }
         }
-
-        return parent::isValidPartial($formData);
     }
 
     /**
